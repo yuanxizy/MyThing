@@ -29,5 +29,39 @@ textarea{color:#f0f3ff}textarea::placeholder{color:#9eabc2}
 .recording .orb{animation:breathe 1.4s ease-in-out infinite}
 @media(max-width:600px){header{top:max(24px,env(safe-area-inset-top))}.orb-wrap{margin-bottom:39px}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
+</style><style>
+.stage{gap:0}
+.stage h1{order:1;margin:0 0 12px;color:#f2f3ff;font-size:clamp(28px,4vw,38px);font-weight:450;letter-spacing:1px}
+.stage>.hint{order:2;color:#aebbd4;font-size:15px;letter-spacing:.3px}
+.start-wrap{order:3;position:relative;margin:34px 0 0;z-index:1}
+.start-wrap:after{content:"";position:absolute;z-index:-1;left:16%;right:16%;bottom:-19px;height:12px;border-radius:50%;background:#7285ff;filter:blur(19px);opacity:.45}
+.start-button{width:min(380px,calc(100vw - 48px));min-height:88px;padding:12px 20px 12px 14px;display:flex;align-items:center;gap:15px;text-align:left;border:1px solid #e3eaff3d;border-radius:25px;background:linear-gradient(135deg,#ffffff20 0%,#e9efff0e 58%,#beaaff17 100%);box-shadow:inset 0 1px 0 #ffffff43,inset 0 -1px 0 #ffffff10,0 18px 55px #03061555,0 0 36px #7785ff22;backdrop-filter:blur(24px) saturate(150%);-webkit-backdrop-filter:blur(24px) saturate(150%);color:#f4f5ff;transition:transform .22s ease,border-color .22s ease,box-shadow .22s ease}
+.start-button:hover{transform:translateY(-3px);border-color:#dce7ff77;box-shadow:inset 0 1px 0 #ffffff62,0 23px 62px #03061570,0 0 46px #8191ff45}
+.start-button:active{transform:translateY(1px) scale(.99)}
+.start-button:focus-visible{outline:2px solid #a7ceff;outline-offset:5px}
+.start-button .plus{width:49px;height:49px;flex:0 0 49px;border:1px solid #ffffff63;border-radius:16px;background:radial-gradient(ellipse at 28% 16%,#fff9 0%,transparent 48%),linear-gradient(140deg,#9bdcff70,#8ba3ff71 55%,#d19aff5c);box-shadow:inset 0 1px 0 #ffffff91,0 4px 17px #99aaff30;filter:none}
+.start-button .plus:before,.start-button .plus:after{background:#fff;box-shadow:0 0 10px #fff9}
+.start-button .plus:before{width:19px;height:2px}.start-button .plus:after{height:19px;width:2px}
+.start-copy{display:flex;flex-direction:column;gap:5px}
+.start-copy strong{font-size:16px;font-weight:550;letter-spacing:.3px}
+.start-copy small{font-size:13px;color:#c2cce0}
+.launch-arrow{margin-left:auto;color:#d7ddf5;font-size:24px;font-weight:300;line-height:1;transition:transform .2s ease}
+.start-button:hover .launch-arrow{transform:translate(2px,-2px)}
+.composer{order:4}
+.editing .stage{gap:0}
+.editing .stage h1{order:1;margin:0 0 8px;font-size:25px}
+.editing .stage>.hint{order:2}
+.editing .start-wrap{order:3;margin:22px 0 0}
+.editing .start-wrap:after{display:none}
+.editing .start-button{width:196px;min-height:54px;padding:6px 10px;border-radius:18px;gap:11px}
+.editing .start-button .plus{width:38px;height:38px;flex-basis:38px;border-radius:12px}
+.editing .start-copy{gap:0}.editing .start-copy strong{font-size:14px}.editing .start-copy small,.editing .launch-arrow{display:none}
+.editing .composer{order:4;margin-top:18px}
+.recording .start-button{animation:breathe 1.4s ease-in-out infinite}
+.recording .start-button .plus:before{width:9px;height:18px;border-radius:8px}
+.recording .start-button .plus:after{width:16px;height:22px;border:1.5px solid #fff;background:transparent;border-top:0;top:57%;border-radius:0 0 10px 10px}
+.recording #voice{color:#f4f5ff;background:#ffffff24;border-color:#ffffff44}
+@media(max-width:600px){.stage{padding-left:24px;padding-right:24px}.stage h1{font-size:29px}.stage>.hint{font-size:14px}.start-wrap{margin-top:30px}.start-button{width:min(360px,calc(100vw - 48px));min-height:82px;border-radius:22px}.editing .stage{padding-top:max(100px,calc(env(safe-area-inset-top) + 70px));padding-bottom:64px}.editing .start-wrap{margin-top:17px}.editing .composer{margin-top:15px}.editing footer{display:none}}
+@media(prefers-reduced-motion:reduce){.start-button,.launch-arrow{transition:none!important}}
 </style></head>
-<body><main id="app"><header><span class="mark" aria-hidden="true"></span>一键记事</header><section class="stage" aria-label="随手记录"><div class="orb-wrap"><button class="orb" id="orb" aria-label="开始记事" aria-expanded="false" aria-controls="composer"><span class="plus" aria-hidden="true"></span></button></div><h1 id="heading">记下这一刻</h1><p class="hint" id="hint">轻触一下，让想法留下来</p><div class="methods" aria-hidden="true"><span><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M7 9h1m3 0h1m3 0h1M7 12h1m3 0h1m3 0h1M8 16h8"/></svg>打字</span><i></i><span><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M6 11v1a6 6 0 0 0 12 0v-1M12 18v3m-3 0h6"/></svg>语音</span></div><section id="composer" class="composer" hidden aria-label="输入记录"><textarea id="note" aria-label="记录内容" placeholder="有什么想记下的？"></textarea><div class="actions"><button id="voice"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M6 11v1a6 6 0 0 0 12 0v-1M12 18v3m-3 0h6"/></svg><span id="voiceLabel">语音输入</span></button><div class="right"><button class="close" id="close" aria-label="收起输入">收起</button><button class="done" id="done" disabled>记好了</button></div></div><p id="status" class="status" role="status" hidden></p></section></section><footer>每一个念头，都值得被留下</footer></main><script src="app.js"></script></body></html>
+<body><main id="app"><header><span class="mark" aria-hidden="true"></span>一键记事</header><section class="stage" aria-label="随手记录"><div class="start-wrap"><button class="start-button" id="orb" aria-label="开始记事" aria-expanded="false" aria-controls="composer"><span class="plus" aria-hidden="true"></span><span class="start-copy"><strong>开始记事</strong><small>打字，或使用语音</small></span><span class="launch-arrow" aria-hidden="true">↗</span></button></div><h1 id="heading">记下这一刻</h1><p class="hint" id="hint">一处入口，打字或语音随时记</p><section id="composer" class="composer" hidden aria-label="输入记录"><textarea id="note" aria-label="记录内容" placeholder="有什么想记下的？"></textarea><div class="actions"><button id="voice"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M6 11v1a6 6 0 0 0 12 0v-1M12 18v3m-3 0h6"/></svg><span id="voiceLabel">语音输入</span></button><div class="right"><button class="close" id="close" aria-label="收起输入">收起</button><button class="done" id="done" disabled>记好了</button></div></div><p id="status" class="status" role="status" hidden></p></section></section><footer>每一个念头，都值得被留下</footer></main><script src="app.js"></script></body></html>
