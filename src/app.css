@@ -1,0 +1,419 @@
+:root {
+  font-family: Inter, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  color: #f1f3fb;
+  background: #08090d;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  min-width: 320px;
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  min-height: 100svh;
+  overflow: hidden;
+}
+
+button,
+textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+button:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid #b8d4ff;
+  outline-offset: 4px;
+}
+
+.app-shell {
+  position: relative;
+  width: 100%;
+  min-height: 100svh;
+  overflow: hidden;
+  background: #08090d;
+  isolation: isolate;
+}
+
+.shader-frame {
+  position: fixed;
+  z-index: 0;
+  inset: 0;
+  width: 100%;
+  height: 100svh;
+  overflow: hidden;
+  container-type: inline-size;
+}
+
+.shader-frame > .animated-top-dock-component.atd-glass {
+  width: 100%;
+  height: 100%;
+  min-height: 100svh;
+}
+
+.note-layer {
+  position: fixed;
+  z-index: 20;
+  inset: 0 44px 0 clamp(310px, 34vw, 500px);
+  display: grid;
+  place-items: center;
+  padding: 28px;
+  pointer-events: none;
+}
+
+.note-content {
+  display: flex;
+  width: min(560px, 100%);
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+  pointer-events: auto;
+  text-align: center;
+}
+
+.note-heading h1 {
+  margin: 0 0 12px;
+  color: #f3f4fd;
+  font-size: clamp(28px, 3.2vw, 38px);
+  font-weight: 500;
+  letter-spacing: 1px;
+  text-shadow: 0 2px 34px #b7c5ff36;
+}
+
+.note-heading p {
+  margin: 0;
+  color: #b7c1d7;
+  font-size: 15px;
+  letter-spacing: 0.2px;
+}
+
+.note-start {
+  display: flex;
+  width: min(380px, 100%);
+  min-height: 88px;
+  align-items: center;
+  gap: 15px;
+  padding: 12px 20px 12px 14px;
+  border: 1px solid #e3eaff3d;
+  border-radius: 25px;
+  background: linear-gradient(135deg, #ffffff20, #e9efff0e 58%, #beaaff17);
+  box-shadow: inset 0 1px 0 #ffffff43, inset 0 -1px 0 #ffffff10, 0 18px 55px #03061555, 0 0 36px #7785ff22;
+  color: #f4f5ff;
+  text-align: left;
+  backdrop-filter: blur(24px) saturate(150%);
+  -webkit-backdrop-filter: blur(24px) saturate(150%);
+  transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+}
+
+.note-start:hover {
+  transform: translateY(-3px);
+  border-color: #dce7ff77;
+  box-shadow: inset 0 1px 0 #ffffff62, 0 23px 62px #03061570, 0 0 46px #8191ff45;
+}
+
+.note-start:active {
+  transform: translateY(1px) scale(0.99);
+}
+
+.note-start__icon {
+  position: relative;
+  display: grid;
+  width: 49px;
+  height: 49px;
+  flex: 0 0 49px;
+  place-items: center;
+  border: 1px solid #ffffff63;
+  border-radius: 16px;
+  background: radial-gradient(ellipse at 28% 16%, #fff9, transparent 48%), linear-gradient(140deg, #9bdcff70, #8ba3ff71 55%, #d19aff5c);
+  box-shadow: inset 0 1px 0 #ffffff91, 0 4px 17px #99aaff30;
+}
+
+.note-start__icon::before,
+.note-start__icon span {
+  position: absolute;
+  display: block;
+  border-radius: 4px;
+  background: #fff;
+  box-shadow: 0 0 10px #fff9;
+  content: "";
+}
+
+.note-start__icon::before {
+  width: 19px;
+  height: 2px;
+}
+
+.note-start__icon span {
+  width: 2px;
+  height: 19px;
+}
+
+.note-start__copy {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.note-start__copy strong {
+  font-size: 16px;
+  font-weight: 550;
+}
+
+.note-start__copy small {
+  color: #c2cce0;
+  font-size: 13px;
+}
+
+.note-start__arrow {
+  width: 19px;
+  height: 19px;
+  flex: 0 0 19px;
+  margin-left: auto;
+  fill: none;
+  stroke: #d7ddf5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.6;
+  transition: transform 0.2s ease;
+}
+
+.note-start:hover .note-start__arrow {
+  transform: translate(2px, -2px);
+}
+
+.composer {
+  width: min(480px, 100%);
+  padding: 20px;
+  border: 1px solid #e2eaff25;
+  border-radius: 24px;
+  background: linear-gradient(145deg, #f1f5ff18, #dfe7ff0a);
+  box-shadow: 0 24px 72px #02051267, inset 0 1px 0 #ffffff1c;
+  backdrop-filter: blur(28px) saturate(140%);
+  -webkit-backdrop-filter: blur(28px) saturate(140%);
+}
+
+.composer textarea {
+  display: block;
+  width: 100%;
+  min-height: 116px;
+  max-height: 240px;
+  padding: 8px;
+  border: 0;
+  border-radius: 8px;
+  outline: none;
+  background: transparent;
+  color: #f0f3ff;
+  font-size: 17px;
+  line-height: 1.7;
+  resize: vertical;
+}
+
+.composer textarea::placeholder {
+  color: #9eabc2;
+}
+
+.composer-actions,
+.composer-buttons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.composer-actions {
+  justify-content: space-between;
+  margin-top: 12px;
+}
+
+.composer-actions button {
+  display: flex;
+  min-height: 42px;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 9px 15px;
+  border: 1px solid #dce7ff20;
+  border-radius: 22px;
+  color: #d5e0f3;
+  background: #dce7ff18;
+  font-size: 14px;
+}
+
+.composer-actions svg {
+  width: 17px;
+  height: 17px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.6;
+}
+
+.composer-actions .close-button {
+  border-color: transparent;
+  color: #b6c3db;
+  background: transparent;
+}
+
+.composer-actions .done-button {
+  border: 0;
+  color: #12162d;
+  background: linear-gradient(135deg, #b7d5ff, #bba4ff);
+  font-weight: 600;
+}
+
+.composer-actions .done-button:disabled {
+  cursor: default;
+  opacity: 0.4;
+}
+
+.note-status {
+  margin: 12px 8px 0;
+  color: #c2d4f2;
+  font-size: 14px;
+  line-height: 1.6;
+  text-align: left;
+}
+
+@media (max-width: 760px) {
+  .note-layer {
+    inset: 0 12px 0 clamp(178px, 46vw, 240px);
+    padding: 12px;
+  }
+
+  .note-content {
+    gap: 21px;
+  }
+
+  .note-heading h1 {
+    font-size: clamp(23px, 6vw, 30px);
+    line-height: 1.3;
+  }
+
+  .note-heading p {
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  .note-start {
+    min-height: 74px;
+    gap: 10px;
+    padding: 9px 12px;
+    border-radius: 21px;
+  }
+
+  .note-start__icon {
+    width: 40px;
+    height: 40px;
+    flex-basis: 40px;
+    border-radius: 13px;
+  }
+
+  .note-start__copy strong {
+    font-size: 14px;
+  }
+
+  .note-start__copy small {
+    font-size: 12px;
+  }
+
+  .note-start__arrow {
+    width: 16px;
+    height: 16px;
+    flex-basis: 16px;
+  }
+
+  .composer {
+    padding: 14px;
+    border-radius: 20px;
+  }
+
+  .composer-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .composer-actions .voice-button {
+    width: 100%;
+  }
+
+  .composer-buttons {
+    justify-content: flex-end;
+  }
+}
+
+@media (max-width: 390px) {
+  .note-layer {
+    right: 8px;
+    padding: 8px;
+  }
+
+  .note-content {
+    gap: 14px;
+  }
+
+  .note-heading h1 {
+    font-size: 23px;
+  }
+
+  .note-heading p {
+    font-size: 12px;
+  }
+
+  .note-start {
+    min-height: 68px;
+    gap: 8px;
+    padding: 8px;
+  }
+
+  .note-start__icon {
+    width: 34px;
+    height: 34px;
+    flex-basis: 34px;
+    border-radius: 11px;
+  }
+
+  .note-start__copy small,
+  .note-start__arrow {
+    display: none;
+  }
+
+  .composer {
+    padding: 11px;
+  }
+
+  .composer textarea {
+    min-height: 100px;
+    font-size: 15px;
+  }
+
+  .composer-actions button {
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .note-start,
+  .note-start__arrow {
+    transition: none !important;
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "id": "animated-top-dock",
+  "sourceRevision": "5a736cd3c1f6f19802f61ebb10e1701b9f7aa26e",
+  "registeredSourceUrl": "https://threeui.com/source-code/animated-top-dock.json",
+  "npmPackage": "@designcodeio/threeui@1.2.0",
+  "npmGitHead": "68802d5428071ada5c20db8094b1649e6bb770ed",
+  "files": [
+    {
+      "path": "src/shaders/animated-top-dock/AnimatedTopDock.tsx",
+      "role": "component",
+      "bytes": 16200,
+      "sha256": "50ddbba7ebc81565f42bd14dda34efb45e7b18c1aa47e97f196256ffedb4478f"
+    },
+    {
+      "path": "src/shaders/animated-top-dock/topDockController.ts",
+      "role": "renderer-source",
+      "bytes": 10664,
+      "sha256": "506ab23d4d42cf1b5bc89131e7714586ee107381bb18d9b0302766e9a1dee2bd"
+    },
+    {
+      "path": "src/shaders/animated-top-dock/retroPixelField.ts",
+      "role": "shader-source",
+      "bytes": 7469,
+      "sha256": "54f0469be51dfce2da7ce37c952d42c583cc7996794bf96d1ea0b2bb35d94115"
+    },
+    {
+      "path": "src/shaders/animated-top-dock/glassParticleField.ts",
+      "role": "renderer-source",
+      "bytes": 11896,
+      "sha256": "bc9f07ae6da33b28f82303ea937095806f8e3a2ab08bd1301ae8457aaf0c3464"
+    },
+    {
+      "path": "src/shaders/threeui.css",
+      "role": "shared-style",
+      "bytes": 40715,
+      "sha256": "efe4447139f1358dd8e9be68edf6fa46cbefbd1de423a4d6c439ca61d2c8eccf"
+    }
+  ],
+  "assets": [
+    {
+      "path": "src/shaders/fonts/fragment-mono.woff2",
+      "mimeType": "font/woff2",
+      "bytes": 15176,
+      "sha256": "4f4dc27f4a770c0d02fde800daa836c8adc0d1e423b28da74baaf0d1cc3ab96c"
+    }
+  ]
+}
