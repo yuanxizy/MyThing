@@ -7,18 +7,76 @@ export type GlassParticleOptions = {
   specular: number;
   rim: number;
   drift: number;
+  titles: string[];
+  notes: Array<{ title: string; text: string }>;
+  onNoteSelect?: (note: { title: string; text: string }) => void;
+  bubbleCounts: BubbleCounts;
+  bubbleStyle: BubbleStyle;
 };
 
+export type BubbleCounts = { large: number; medium: number; small: number; micro: number };
+export type BubbleStyle = "glass" | "card" | "star" | "cookie";
+
+const DEFAULT_BUBBLE_COUNTS: BubbleCounts = { large: 4, medium: 5, small: 5, micro: 5 };
+
 export const GLASS_PARTICLE_DEFAULTS: GlassParticleOptions = {
-  count: 22,
+  count: 19,
   thickness: 0.115,
   dispersion: 0.05,
   specular: 0.85,
   rim: 0.5,
   drift: 1,
+  titles: [],
+  notes: [],
+  bubbleCounts: DEFAULT_BUBBLE_COUNTS,
+  bubbleStyle: "glass",
 };
 
+function makeBeadGeometry(style: BubbleStyle) {
+  if (style === "glass") return new THREE.SphereGeometry(1, 44, 30);
+  const shape = new THREE.Shape();
+  if (style === "star") {
+    for (let point = 0; point < 10; point += 1) {
+      const angle = Math.PI / 2 + point * Math.PI / 5;
+      const radius = point % 2 === 0 ? 1 : 0.46;
+      const x = Math.cos(angle) * radius;
+      const y = Math.sin(angle) * radius;
+      if (point === 0) shape.moveTo(x, y); else shape.lineTo(x, y);
+    }
+    shape.closePath();
+  } else if (style === "cookie") {
+    for (let point = 0; point < 40; point += 1) {
+      const angle = point / 40 * Math.PI * 2;
+      const radius = point % 5 === 0 ? 0.88 : 1;
+      const x = Math.cos(angle) * radius;
+      const y = Math.sin(angle) * radius;
+      if (point === 0) shape.moveTo(x, y); else shape.lineTo(x, y);
+    }
+    shape.closePath();
+  } else {
+    const w = 0.91; const h = 1; const r = 0.16;
+    shape.moveTo(-w + r, -h); shape.lineTo(w - r, -h); shape.quadraticCurveTo(w, -h, w, -h + r);
+    shape.lineTo(w, h - r); shape.quadraticCurveTo(w, h, w - r, h); shape.lineTo(-w + r, h);
+    shape.quadraticCurveTo(-w, h, -w, h - r); shape.lineTo(-w, -h + r); shape.quadraticCurveTo(-w, -h, -w + r, -h);
+  }
+  const geometry = new THREE.ExtrudeGeometry(shape, { depth: 0.16, bevelEnabled: true, bevelSegments: 3, steps: 1, bevelSize: 0.055, bevelThickness: 0.055, curveSegments: 8 });
+  geometry.translate(0, 0, -0.08);
+  geometry.computeVertexNormals();
+  return geometry;
+}
+
 const MAX_COUNT = 34;
+
+function normalizeBubbleCounts(counts: BubbleCounts): BubbleCounts {
+  let remaining = MAX_COUNT;
+  const result = { large: 0, medium: 0, small: 0, micro: 0 };
+  for (const category of ["large", "medium", "small", "micro"] as const) {
+    const amount = Math.max(0, Math.floor(Number(counts[category]) || 0));
+    result[category] = Math.min(amount, remaining);
+    remaining -= result[category];
+  }
+  return result;
+}
 
 const QUAD_VERTEX = "void main(){ gl_Position = vec4(position.xy, 0.0, 1.0); }";
 
@@ -170,11 +228,7 @@ export function createGlassParticleField(canvas: HTMLCanvasElement, getOptions: 
   const group = new THREE.Group();
   scene.add(group);
 
-  const geometries = [
-    new THREE.SphereGeometry(1, 44, 30),
-    new THREE.IcosahedronGeometry(1, 1),
-    new THREE.TorusGeometry(0.78, 0.30, 22, 56),
-  ];
+  const beadGeometry = makeBeadGeometry(getOptions().bubbleStyle);
   const tints = [
     new THREE.Color(1.04, 1.0, 1.02),
     new THREE.Color(0.97, 1.0, 1.06),
@@ -183,14 +237,20 @@ export function createGlassParticleField(canvas: HTMLCanvasElement, getOptions: 
 
   const random = seeded(20260826);
   const beads: Bead[] = [];
-  for (let index = 0; index < MAX_COUNT; index += 1) {
-    /* the first third are the large hero beads, the remainder are the fine dust
-       that reads as depth behind them */
-    const hero = index < 8;
-    const radius = hero ? 0.40 + random() * 0.34 : 0.09 + random() * 0.18;
-    /* spheres carry the look; the gem and the ring appear once each among the
-       hero beads so the field has silhouette variety without reading as props */
-    const geometry = geometries[hero ? (index === 3 ? 1 : index === 6 ? 2 : 0) : 0];
+  const bubbleCounts = normalizeBubbleCounts(getOptions().bubbleCounts);
+  const largeEnd = bubbleCounts.large;
+  const mediumEnd = largeEnd + bubbleCounts.medium;
+  const smallEnd = mediumEnd + bubbleCounts.small;
+  const totalBubbles = smallEnd + bubbleCounts.micro;
+  for (let index = 0; index < totalBubbles; index += 1) {
+    const major = index < mediumEnd;
+    const radius = index < largeEnd
+      ? 0.52 + random() * 0.22
+      : index < mediumEnd
+        ? 0.34 + random() * 0.12
+        : index < smallEnd
+          ? 0.20 + random() * 0.10
+          : 0.09 + random() * 0.07;
     const material = new THREE.ShaderMaterial({
       uniforms: {
         uBackdrop: { value: target.texture },
@@ -204,18 +264,17 @@ export function createGlassParticleField(canvas: HTMLCanvasElement, getOptions: 
       vertexShader: GLASS_VERTEX,
       fragmentShader: GLASS_FRAGMENT,
     });
-    const mesh = new THREE.Mesh(geometry, material);
+    const mesh = new THREE.Mesh(beadGeometry, material);
     mesh.scale.setScalar(radius);
-    /* hero beads are rejection-sampled against the ones already placed: two
-       large spheres that intersect read as one lumpy blob rather than as glass */
+    /* keep the large and medium bubbles from merging into one shape */
     const origin = new THREE.Vector3();
     for (let attempt = 0; attempt < 48; attempt += 1) {
       origin.set(
         (random() - 0.5) * 8.4,
         (random() - 0.5) * 5.0 - 0.25,
-        hero ? -1.4 + random() * 2.6 : -3.6 + random() * 2.4,
+        major ? -1.4 + random() * 2.6 : -3.6 + random() * 2.4,
       );
-      if (!hero) break;
+      if (!major) break;
       const clear = beads.every((placed) => {
         const dx = placed.origin.x - origin.x;
         const dy = placed.origin.y - origin.y;
@@ -224,7 +283,7 @@ export function createGlassParticleField(canvas: HTMLCanvasElement, getOptions: 
       if (clear) break;
     }
     mesh.position.copy(origin);
-    mesh.rotation.set(random() * 6.28, random() * 6.28, random() * 6.28);
+    if (getOptions().bubbleStyle === "glass") mesh.rotation.set(random() * 6.28, random() * 6.28, random() * 6.28);
     group.add(mesh);
     beads.push({
       mesh,
@@ -237,8 +296,84 @@ export function createGlassParticleField(canvas: HTMLCanvasElement, getOptions: 
     });
   }
 
+  const titleSprites = beads
+    .map((bead, index) => ({ bead, index }))
+    .sort((a, b) => b.bead.radius - a.bead.radius)
+    .slice(0, 3)
+    .map(({ bead }) => {
+      const canvas = document.createElement("canvas");
+      canvas.width = 512;
+      canvas.height = 192;
+      const texture = new THREE.CanvasTexture(canvas);
+      const isGlass = getOptions().bubbleStyle === "glass";
+      const plane = isGlass ? null : new THREE.PlaneGeometry(1, 0.375);
+      const material = isGlass
+        ? new THREE.SpriteMaterial({ map: texture, transparent: true, depthTest: false, depthWrite: false })
+        : new THREE.MeshBasicMaterial({ map: texture, transparent: true, depthTest: false, depthWrite: false, toneMapped: false });
+      const sprite = isGlass ? new THREE.Sprite(material as THREE.SpriteMaterial) : new THREE.Mesh(plane!, material as THREE.MeshBasicMaterial);
+      if (isGlass) sprite.scale.set(bead.radius * 1.62, bead.radius * 0.61, 1);
+      else {
+        const widthFactor = getOptions().bubbleStyle === "star" ? 0.92 : getOptions().bubbleStyle === "cookie" ? 1.18 : 1.52;
+        sprite.scale.setScalar(bead.radius * widthFactor);
+        sprite.position.z = 0.15;
+      }
+      sprite.renderOrder = 3;
+      if (isGlass) group.add(sprite); else bead.mesh.add(sprite);
+      return { bead, canvas, texture, sprite, geometry: plane, title: "" };
+    });
+  const raycaster = new THREE.Raycaster();
+  const raycastPointer = new THREE.Vector2();
+  const beadMeshes = titleSprites.map(({ bead }) => bead.mesh);
+  const hitNoteAt = (clientX: number, clientY: number) => {
+    const rect = canvas.getBoundingClientRect();
+    raycastPointer.set(((clientX - rect.left) / Math.max(1, rect.width)) * 2 - 1, -(((clientY - rect.top) / Math.max(1, rect.height)) * 2 - 1));
+    group.updateMatrixWorld(true);
+    raycaster.setFromCamera(raycastPointer, camera);
+    const hit = raycaster.intersectObjects(beadMeshes, false)[0];
+    return hit ? titleSprites.findIndex(({ bead }) => bead.mesh === hit.object) : -1;
+  };
+  const onCanvasPointerMove = (event: PointerEvent) => {
+    const index = hitNoteAt(event.clientX, event.clientY);
+    canvas.style.cursor = index >= 0 && Boolean(getOptions().notes[index]) ? "pointer" : "default";
+  };
+  const onCanvasClick = (event: MouseEvent) => {
+    const index = hitNoteAt(event.clientX, event.clientY);
+    const note = index >= 0 ? getOptions().notes[index] : undefined;
+    if (note) getOptions().onNoteSelect?.(note);
+  };
+  canvas.addEventListener("pointermove", onCanvasPointerMove);
+  canvas.addEventListener("click", onCanvasClick);
+  const updateTitles = (titles: string[]) => {
+    titleSprites.forEach((label, index) => {
+      const title = titles[index] ?? "";
+      if (title === label.title) return;
+      label.title = title;
+      const context = label.canvas.getContext("2d");
+      if (!context) return;
+      context.clearRect(0, 0, label.canvas.width, label.canvas.height);
+      if (title) {
+        const glyphs = Array.from(title);
+        const lines = glyphs.length > 7 ? [glyphs.slice(0, Math.ceil(glyphs.length / 2)).join(""), glyphs.slice(Math.ceil(glyphs.length / 2)).join("")] : [title];
+        const gradient = context.createLinearGradient(0, 48, 0, 144);
+        gradient.addColorStop(0, "#ffffff");
+        gradient.addColorStop(1, "#dce8ff");
+        context.fillStyle = gradient;
+        context.font = `600 ${lines.length === 1 ? 54 : 42}px 'Microsoft YaHei', sans-serif`;
+        context.textAlign = "center";
+        context.textBaseline = "middle";
+        context.shadowColor = "rgba(16,27,55,.42)";
+        context.shadowBlur = 8;
+        lines.forEach((line, index) => context.fillText(line, 256, lines.length === 1 ? 96 : 66 + index * 60, 460));
+      }
+      label.texture.needsUpdate = true;
+    });
+  };
+
   const pointer = new THREE.Vector2();
   const pointerTarget = new THREE.Vector2();
+  const cameraWorldPosition = new THREE.Vector3();
+  const cameraLocalPosition = new THREE.Vector3();
+  const labelOffset = new THREE.Vector3();
   let width = 1;
   let height = 1;
   let clock = 0;
@@ -259,6 +394,19 @@ export function createGlassParticleField(canvas: HTMLCanvasElement, getOptions: 
        the bead spread stays the same composition at every aspect */
     camera.fov = camera.aspect > 1 ? 42 : 42 / Math.max(0.62, camera.aspect);
     camera.updateProjectionMatrix();
+    const tanHalfFov = Math.tan(THREE.MathUtils.degToRad(camera.fov * 0.5));
+    for (const bead of beads) {
+      const nearestDepth = Math.max(0.1, camera.position.z - bead.origin.z - bead.bob * 0.5);
+      const halfHeight = nearestDepth * tanHalfFov;
+      const halfWidth = halfHeight * camera.aspect;
+      const rotationMargin = Math.abs(bead.origin.z) * 0.15 + 0.08;
+      const xMargin = bead.radius * 1.1 + bead.bob * 0.9 + 0.28 + rotationMargin;
+      const yMargin = bead.radius * 1.1 + bead.bob + 0.2 + rotationMargin;
+      const safeX = Math.max(0, halfWidth - xMargin);
+      const safeY = Math.max(0, halfHeight - yMargin);
+      bead.origin.x = THREE.MathUtils.clamp(bead.origin.x, -safeX, safeX);
+      bead.origin.y = THREE.MathUtils.clamp(bead.origin.y, -safeY, safeY);
+    }
     for (const bead of beads) bead.material.uniforms.uBackdrop.value = target.texture;
   };
 
@@ -266,11 +414,20 @@ export function createGlassParticleField(canvas: HTMLCanvasElement, getOptions: 
 
   const render = (now = performance.now()) => {
     const options = getOptions();
+    updateTitles(options.titles);
     clock += Math.min(96, now - lastAt) * 0.001;
     lastAt = now;
     pointer.lerp(pointerTarget, 0.045);
+    group.rotation.y = pointer.x * 0.14;
+    group.rotation.x = -pointer.y * 0.1;
+    group.position.x = pointer.x * 0.28;
+    group.position.y = pointer.y * 0.2;
+    group.updateMatrixWorld(true);
+    camera.getWorldPosition(cameraWorldPosition);
+    cameraLocalPosition.copy(cameraWorldPosition);
+    group.worldToLocal(cameraLocalPosition);
 
-    const visible = Math.max(4, Math.min(MAX_COUNT, Math.round(options.count)));
+    const visible = Math.max(0, Math.min(MAX_COUNT, Math.round(options.count)));
     for (let index = 0; index < beads.length; index += 1) {
       const bead = beads[index];
       bead.mesh.visible = index < visible;
@@ -286,15 +443,21 @@ export function createGlassParticleField(canvas: HTMLCanvasElement, getOptions: 
         bead.origin.y + Math.cos(t * 0.27 + bead.phase * 1.3) * bead.bob,
         bead.origin.z + Math.sin(t * 0.17 + bead.phase * 0.7) * bead.bob * 0.5,
       );
-      bead.mesh.rotation.x += bead.spin.x * 0.0075 * options.drift;
-      bead.mesh.rotation.y += bead.spin.y * 0.0075 * options.drift;
-      bead.mesh.rotation.z += bead.spin.z * 0.0075 * options.drift;
+      const label = titleSprites.find((entry) => entry.bead === bead);
+      if (label) {
+        label.sprite.visible = Boolean(label.title);
+        if (getOptions().bubbleStyle === "glass") {
+          labelOffset.copy(cameraLocalPosition).sub(bead.mesh.position).normalize().multiplyScalar(bead.radius * 1.04);
+          label.sprite.position.copy(bead.mesh.position).add(labelOffset);
+          label.sprite.quaternion.copy(group.quaternion).invert().multiply(camera.quaternion);
+        }
+      }
+      if (getOptions().bubbleStyle === "glass") {
+        bead.mesh.rotation.x += bead.spin.x * 0.0075 * options.drift;
+        bead.mesh.rotation.y += bead.spin.y * 0.0075 * options.drift;
+        bead.mesh.rotation.z += bead.spin.z * 0.0075 * options.drift;
+      }
     }
-
-    group.rotation.y = pointer.x * 0.14;
-    group.rotation.x = -pointer.y * 0.1;
-    group.position.x = pointer.x * 0.28;
-    group.position.y = pointer.y * 0.2;
 
     backdropUniforms.uTime.value = clock;
     backdropUniforms.uPointer.value.set(pointer.x, pointer.y);
@@ -309,8 +472,16 @@ export function createGlassParticleField(canvas: HTMLCanvasElement, getOptions: 
   };
 
   const dispose = () => {
+    canvas.removeEventListener("pointermove", onCanvasPointerMove);
+    canvas.removeEventListener("click", onCanvasClick);
+    canvas.style.cursor = "";
+    for (const label of titleSprites) {
+      label.sprite.material.dispose();
+      label.geometry?.dispose();
+      label.texture.dispose();
+    }
     for (const bead of beads) bead.material.dispose();
-    for (const geometry of geometries) geometry.dispose();
+  beadGeometry.dispose();
     backdropGeometry.dispose();
     backdropMaterial.dispose();
     target.dispose();

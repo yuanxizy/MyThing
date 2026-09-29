@@ -1,9 +1,13 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
-import { Scene } from "./Scene";
+import { OriginalScene } from "./OriginalScene";
+
+if (window.location.pathname === "/original") {
+  window.history.replaceState(null, "", "/");
+}
 
 createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <Scene />
+    <OriginalScene />
   </React.StrictMode>,
 );

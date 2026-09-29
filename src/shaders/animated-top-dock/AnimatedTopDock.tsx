@@ -1,6 +1,10 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { createTopDockController, type TopDockOptions } from "./topDockController";
 
+export type GlassNote = { title: string; text: string };
+export type BubbleCounts = { large: number; medium: number; small: number; micro: number };
+export type BubbleStyle = "glass" | "card" | "star" | "cookie";
+
 export const ANIMATED_TOP_DOCK_VARIANTS = ["sable", "modern", "retro", "glass"] as const;
 export type AnimatedTopDockVariant = (typeof ANIMATED_TOP_DOCK_VARIANTS)[number];
 
@@ -25,6 +29,12 @@ export type AnimatedTopDockProps = {
   specular?: number;
   rim?: number;
   drift?: number;
+  glassTitles?: string[];
+  glassNotes?: GlassNote[];
+  onGlassNoteSelect?: (note: GlassNote) => void;
+  bubbleCounts?: BubbleCounts;
+  bubbleStyle?: BubbleStyle;
+  disablePointerMotion?: boolean;
   className?: string;
 };
 
@@ -101,14 +111,25 @@ const BRAND_MARK = (
   </svg>
 );
 
-function useDockController(getOptions: () => TopDockOptions) {
+function useDockController(getOptions: () => TopDockOptions, enabled = true) {
   const rootRef = useRef<HTMLElement>(null);
   useEffect(() => {
     const root = rootRef.current;
     if (!root) return undefined;
+    if (!enabled) {
+      root.dataset.dockState = "static";
+      root.dataset.dockMax = "0.00";
+      root.querySelectorAll<HTMLElement>("[data-dock-item]").forEach((item) => {
+        item.dataset.dockNear = "false";
+        item.style.width = "";
+        item.style.height = "";
+        item.style.transform = "";
+      });
+      return undefined;
+    }
     return createTopDockController(root, getOptions);
     /* the getter is a stable ref reader, so the controller is built once */
-  }, []);
+  }, [enabled]);
   return rootRef;
 }
 
@@ -124,7 +145,7 @@ type ShaderField = {
    The module is resolved in its own effect so the effect that owns the GL
    context can create and tear it down synchronously — an async create survives
    its own cleanup and leaves two renderers fighting over one canvas. */
-function useShaderField(active: boolean, load: () => Promise<(canvas: HTMLCanvasElement) => ShaderField>) {
+function useShaderField(active: boolean, load: () => Promise<(canvas: HTMLCanvasElement) => ShaderField>, revision = "") {
   const hostRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [factory, setFactory] = useState<{ create: (canvas: HTMLCanvasElement) => ShaderField } | null>(null);
@@ -177,7 +198,7 @@ function useShaderField(active: boolean, load: () => Promise<(canvas: HTMLCanvas
       host.removeEventListener("pointermove", onPointerMove);
       field.dispose();
     };
-  }, [active, factory]);
+  }, [active, factory, revision]);
 
   return { hostRef, canvasRef };
 }
@@ -196,7 +217,7 @@ export function AnimatedTopDock({ className = "", ...props }: AnimatedTopDockPro
     axis: variant === "glass" ? "y" as const : "x" as const,
     distribute: variant === "retro",
     lockTrack: variant === "modern",
-  }));
+  }), !optionsRef.current.disablePointerMotion);
 
   const retro = useShaderField(variant === "retro", async () => {
     const { createRetroPixelField } = await import("./retroPixelField");
@@ -209,15 +230,23 @@ export function AnimatedTopDock({ className = "", ...props }: AnimatedTopDockPro
   });
   const glass = useShaderField(variant === "glass", async () => {
     const { createGlassParticleField } = await import("./glassParticleField");
-    return (canvas: HTMLCanvasElement) => createGlassParticleField(canvas, () => ({
-      count: optionsRef.current.particles,
-      thickness: optionsRef.current.thickness,
-      dispersion: optionsRef.current.dispersion,
-      specular: optionsRef.current.specular,
-      rim: optionsRef.current.rim,
-      drift: optionsRef.current.drift,
-    }));
-  });
+    return (canvas: HTMLCanvasElement) => createGlassParticleField(canvas, () => {
+      const bubbleCounts = optionsRef.current.bubbleCounts ?? { large: 4, medium: 5, small: 5, micro: 5 };
+      return {
+        count: Object.values(bubbleCounts).reduce((sum, amount) => sum + amount, 0),
+        thickness: optionsRef.current.thickness,
+        dispersion: optionsRef.current.dispersion,
+        specular: optionsRef.current.specular,
+        rim: optionsRef.current.rim,
+        drift: optionsRef.current.drift,
+        titles: optionsRef.current.glassTitles ?? [],
+        notes: optionsRef.current.glassNotes ?? [],
+        onNoteSelect: optionsRef.current.onGlassNoteSelect,
+        bubbleCounts,
+        bubbleStyle: optionsRef.current.bubbleStyle ?? "glass",
+      };
+    });
+  }, `${JSON.stringify(optionsRef.current.bubbleCounts ?? { large: 4, medium: 5, small: 5, micro: 5 })}:${optionsRef.current.bubbleStyle ?? "glass"}`);
 
   const dockItems = (itemClass: string, iconClass: string, viewBox: string) => items.map((item) => (
     <button

@@ -70,10 +70,239 @@ textarea:focus-visible {
   min-height: 100svh;
 }
 
+.original-page {
+  position: fixed;
+  z-index: 0;
+  inset: 0;
+  overflow: hidden;
+  isolation: isolate;
+  background: #08090d;
+}
+
+.original-page__content {
+  position: absolute;
+  z-index: 20;
+  top: 46%;
+  left: 50%;
+  display: flex;
+  width: min(440px, calc(100vw - 40px));
+  align-items: center;
+  flex-direction: column;
+  gap: 13px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  text-align: center;
+}
+
+.original-page__composer {
+  z-index: 24;
+  bottom: max(28px, env(safe-area-inset-bottom));
+  width: min(560px, calc(100vw - 40px));
+  padding: 10px 16px;
+}
+
+.original-page__composer textarea {
+  min-height: 58px;
+  max-height: 120px;
+  padding: 4px 6px;
+}
+
+.original-page__input-hint {
+  color: #aebbd3;
+  font-size: 13px;
+}
+
+/* Keep the baseline rail and its dialogs still during pointer and click input. */
+.original-page .atd-glass__item,
+.original-page .atd-glass__item:hover,
+.original-page .atd-glass__item:active,
+.original-page .atd-glass__item[data-dock-near="true"],
+.original-page .atd-glass__item[aria-pressed="true"],
+.original-page .atd-glass__cta,
+.original-page .atd-glass__cta:hover,
+.original-page .atd-glass__cta:active,
+.original-page .bubble-config-backdrop,
+.original-page .bubble-config,
+.original-page .note-detail-backdrop,
+.original-page .note-detail {
+  transition: none !important;
+  animation: none !important;
+}
+
+.original-page__content h1 {
+  margin: 0;
+  color: #f3f4fd;
+  font-size: clamp(28px, 3.2vw, 38px);
+  font-weight: 500;
+  letter-spacing: 1px;
+  text-shadow: 0 2px 34px #b7c5ff36;
+}
+
+.original-page__content > p {
+  margin: 0 0 10px;
+  color: #b7c1d7;
+  font-size: 15px;
+}
+
+.original-page__start {
+  display: flex;
+  width: min(380px, 100%);
+  min-height: 76px;
+  align-items: center;
+  gap: 14px;
+  padding: 11px 17px 11px 13px;
+  border: 1px solid #e3eaff48;
+  border-radius: 23px;
+  background: linear-gradient(135deg, #ffffff28, #e9efff15 58%, #beaaff20);
+  box-shadow: inset 0 1px 0 #ffffff50, inset 0 -1px 0 #ffffff10, 0 18px 55px #03061555, 0 0 36px #7785ff25;
+  color: #f4f5ff;
+  pointer-events: auto;
+  text-align: left;
+  text-decoration: none;
+  backdrop-filter: blur(24px) saturate(150%);
+  -webkit-backdrop-filter: blur(24px) saturate(150%);
+  transition: transform .22s ease, border-color .22s ease, box-shadow .22s ease;
+}
+
+.original-page__start:hover {
+  transform: translateY(-3px);
+  border-color: #dce7ff77;
+  box-shadow: inset 0 1px 0 #ffffff62, 0 23px 62px #03061570, 0 0 46px #8191ff45;
+}
+
+.original-page__plus {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  place-items: center;
+  border: 1px solid #ffffff63;
+  border-radius: 14px;
+  background: linear-gradient(140deg, #9bdcff70, #8ba3ff71 55%, #d19aff5c);
+  box-shadow: inset 0 1px 0 #ffffff91, 0 4px 17px #99aaff30;
+  font-size: 25px;
+  font-weight: 300;
+}
+
+.original-page__start > span:nth-child(2) {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.original-page__start strong { font-size: 15px; font-weight: 550; }
+.original-page__start small { color: #c2cce0; font-size: 12px; }
+.original-page__arrow { margin-left: auto; color: #d7ddf5; font-size: 19px; }
+
+.original-page__switch {
+  padding: 11px 16px;
+  border: 1px solid #e9f0ff36;
+  border-radius: 15px;
+  background: #eef4ff18;
+  box-shadow: inset 0 1px 0 #ffffff2e, 0 10px 30px #01051435;
+  color: #f0f3ff;
+  font-size: 13px;
+  text-decoration: none;
+  backdrop-filter: blur(18px) saturate(145%);
+}
+
+.original-page__actions {
+  position: absolute;
+  z-index: 40;
+  top: 26px;
+  right: 28px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.page-mode-link {
+  display: grid;
+  min-height: 42px;
+  align-items: center;
+  padding: 0 13px;
+  border: 1px solid #e9f0ff36;
+  border-radius: 15px;
+  background: linear-gradient(145deg, #eef4ff20, #b8caff0b);
+  box-shadow: inset 0 1px 0 #ffffff2e, 0 10px 30px #01051435;
+  color: #eef2ff;
+  font-size: 12px;
+  text-decoration: none;
+  backdrop-filter: blur(18px) saturate(145%);
+}
+
+.app-shell,
+.shader-frame,
+.composer,
+.bubble-config-trigger {
+  transition: background-color 420ms ease, filter 420ms ease, border-color 420ms ease, box-shadow 420ms ease;
+}
+
+.app-shell.theme-mint {
+  background: #071815;
+}
+
+.app-shell.theme-mint .shader-frame {
+  filter: hue-rotate(105deg) saturate(0.86) brightness(0.94);
+}
+
+.app-shell.theme-mint .composer {
+  border-color: #b5ffe63d;
+  background: linear-gradient(145deg, #c8fff01d, #c0ffe70b 58%, #7dffdf14);
+  box-shadow: 0 24px 72px #00150f67, inset 0 1px 0 #effffb30, 0 0 40px #61ffd31a;
+}
+
+/* Mint Observatory: note cards and a crisp, paper-like navigation rail. */
+.app-shell.theme-mint .atd-glass__rail {
+  border: 1px solid #e5fff1b8;
+  border-radius: 20px 20px 28px 10px;
+  background: linear-gradient(155deg, #f4fff4f2, #d5f2e8e8);
+  box-shadow: 0 26px 64px #032c2650, inset 0 1px 0 #fff;
+  backdrop-filter: blur(20px) saturate(115%);
+  -webkit-backdrop-filter: blur(20px) saturate(115%);
+}
+
+.app-shell.theme-mint .atd-glass__brand { color: #143b39; }
+.app-shell.theme-mint .atd-glass__hairline { background: linear-gradient(90deg, transparent, #528d7b55, transparent); }
+.app-shell.theme-mint .atd-glass__item { color: #52726b; border-radius: 9px; }
+.app-shell.theme-mint .atd-glass__item[data-dock-near="true"] { color: #174c45; border-color: #70a99855; background: #ffffffa8; box-shadow: 0 4px 12px #2a6e5c18; }
+.app-shell.theme-mint .atd-glass__item[aria-pressed="true"] { color: #f5fffc; border-color: #237968; background: linear-gradient(125deg, #287f6b, #47a98a); box-shadow: 0 7px 18px #227d682e; }
+.app-shell.theme-mint .atd-glass__cta { border: 0; border-radius: 12px; color: white; background: #206f60; box-shadow: 0 6px 18px #1e705e36; }
+
+.app-shell.theme-dusk {
+  background: #1c100e;
+}
+
+.app-shell.theme-dusk .shader-frame {
+  filter: hue-rotate(265deg) saturate(0.78) brightness(0.92);
+}
+
+.app-shell.theme-dusk .composer {
+  border-color: #ffe2ca38;
+  background: linear-gradient(145deg, #ffe3cc1c, #ffcfaa0b 58%, #ffae8216);
+  box-shadow: 0 24px 72px #16080470, inset 0 1px 0 #fff6ea2b, 0 0 40px #ffad751a;
+}
+
+/* Dusk Bakery: cookie notes and a warm, dark enamel navigation rail. */
+.app-shell.theme-dusk .atd-glass__rail {
+  border: 1px solid #ffe1c35c;
+  border-radius: 30px 18px 30px 18px;
+  background: linear-gradient(155deg, #563a37ed, #261b24ed 72%);
+  box-shadow: 0 28px 66px #1e0b125e, inset 0 1px 0 #fff1d640, inset 0 0 0 4px #6f4a3b38;
+  backdrop-filter: blur(22px) saturate(125%);
+  -webkit-backdrop-filter: blur(22px) saturate(125%);
+}
+
+.app-shell.theme-dusk .atd-glass__mark { border-radius: 50%; }
+.app-shell.theme-dusk .atd-glass__item { color: #e6c8bb; border-radius: 999px; }
+.app-shell.theme-dusk .atd-glass__item[data-dock-near="true"] { color: #fff1df; border-color: #ffd4a645; background: #f9c99b15; box-shadow: inset 0 1px 0 #ffe4c41c; }
+.app-shell.theme-dusk .atd-glass__item[aria-pressed="true"] { color: #482719; border-color: #ffe2ab; background: linear-gradient(135deg, #ffe7b8, #f3ad75); box-shadow: 0 6px 18px #f5ad6540, inset 0 1px 0 #fff9df; }
+.app-shell.theme-dusk .atd-glass__cta { border-color: #ffd7a9; border-radius: 999px; color: #40241b; background: linear-gradient(180deg, #fff0c8, #eeb27d); }
+
 .note-layer {
   position: fixed;
   z-index: 20;
-  inset: 0 44px 0 clamp(310px, 34vw, 500px);
+  inset: 0;
   display: grid;
   place-items: center;
   padding: 28px;
@@ -81,13 +310,54 @@ textarea:focus-visible {
 }
 
 .note-content {
-  display: flex;
-  width: min(560px, 100%);
-  flex-direction: column;
-  align-items: center;
-  gap: 30px;
-  pointer-events: auto;
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
   text-align: center;
+}
+
+.app-shell.is-editing .note-layer {
+  inset: 0;
+  place-items: stretch;
+  padding: 0;
+}
+
+.app-shell.is-editing .note-content {
+  position: static;
+  display: block;
+  width: auto;
+  pointer-events: none;
+}
+
+.app-shell.is-editing .note-heading {
+  position: fixed;
+  top: clamp(16px, calc(50% - 215px), 28vh);
+  left: 50%;
+  width: min(560px, calc(100vw - 32px));
+  transform: translateX(-50%);
+}
+
+.app-shell.is-editing .composer {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: min(480px, calc(100vw - 32px));
+  margin: 0;
+  transform: translate(-50%, -50%);
+  pointer-events: auto;
+}
+
+.composer {
+  position: fixed;
+  z-index: 24;
+  left: 50%;
+  bottom: max(28px, env(safe-area-inset-bottom));
+  width: min(560px, calc(100vw - 40px));
+  margin: 0;
+  transform: translateX(-50%);
+  pointer-events: auto;
+  text-align: left;
 }
 
 .note-heading h1 {
@@ -125,13 +395,13 @@ textarea:focus-visible {
 }
 
 .note-start:hover {
-  transform: translateY(-3px);
+  transform: translate(-50%, -3px);
   border-color: #dce7ff77;
   box-shadow: inset 0 1px 0 #ffffff62, 0 23px 62px #03061570, 0 0 46px #8191ff45;
 }
 
 .note-start:active {
-  transform: translateY(1px) scale(0.99);
+  transform: translate(-50%, 1px) scale(0.99);
 }
 
 .note-start__icon {
@@ -202,7 +472,7 @@ textarea:focus-visible {
 
 .composer {
   width: min(480px, 100%);
-  padding: 20px;
+  padding: 10px 16px;
   border: 1px solid #e2eaff25;
   border-radius: 24px;
   background: linear-gradient(145deg, #f1f5ff18, #dfe7ff0a);
@@ -214,9 +484,9 @@ textarea:focus-visible {
 .composer textarea {
   display: block;
   width: 100%;
-  min-height: 116px;
-  max-height: 240px;
-  padding: 8px;
+  min-height: 58px;
+  max-height: 120px;
+  padding: 4px 6px;
   border: 0;
   border-radius: 8px;
   outline: none;
@@ -240,7 +510,7 @@ textarea:focus-visible {
 
 .composer-actions {
   justify-content: space-between;
-  margin-top: 12px;
+  margin-top: 6px;
 }
 
 .composer-actions button {
@@ -293,14 +563,338 @@ textarea:focus-visible {
   text-align: left;
 }
 
+.note-detail-backdrop {
+  position: fixed;
+  z-index: 50;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 22px;
+  background: rgba(5, 7, 16, 0.36);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.note-detail {
+  width: min(520px, 100%);
+  max-height: min(72vh, 620px);
+  overflow: auto;
+  padding: 24px 26px 28px;
+  border: 1px solid rgba(226, 235, 255, 0.26);
+  border-radius: 24px;
+  background: linear-gradient(145deg, rgba(44, 56, 91, 0.91), rgba(33, 38, 68, 0.88));
+  box-shadow: 0 28px 90px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.16);
+  color: #f4f6ff;
+}
+
+.note-detail__topline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #bbc7e1;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+}
+
+.note-detail__topline button {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  color: #eef2ff;
+  font-size: 24px;
+  line-height: 1;
+}
+
+.note-detail h2 {
+  margin: 16px 0 12px;
+  font-size: 22px;
+  font-weight: 550;
+  letter-spacing: 0.02em;
+}
+
+.note-detail p {
+  margin: 0;
+  color: #d9e0f1;
+  font-size: 16px;
+  line-height: 1.85;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.bubble-config-trigger {
+  position: relative;
+  z-index: 30;
+  display: grid;
+  width: 46px;
+  height: 46px;
+  place-items: center;
+  border: 1px solid rgba(233, 240, 255, 0.3);
+  border-radius: 16px;
+  background: linear-gradient(145deg, rgba(238, 244, 255, 0.18), rgba(184, 202, 255, 0.08));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.24), 0 10px 30px rgba(1, 5, 20, 0.22);
+  color: #eff3ff;
+  backdrop-filter: blur(18px) saturate(145%);
+  -webkit-backdrop-filter: blur(18px) saturate(145%);
+}
+
+.scene-controls {
+  position: fixed;
+  z-index: 30;
+  top: 26px;
+  right: 28px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.theme-switcher {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px;
+  border: 1px solid #e9f0ff36;
+  border-radius: 18px;
+  background: linear-gradient(145deg, #eef4ff20, #b8caff0b);
+  box-shadow: inset 0 1px 0 #ffffff2e, 0 10px 30px #01051435;
+  backdrop-filter: blur(18px) saturate(145%);
+  -webkit-backdrop-filter: blur(18px) saturate(145%);
+}
+
+.theme-switcher button {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  background: transparent;
+}
+
+.theme-switcher button.is-active {
+  border-color: #ffffff66;
+  background: #ffffff18;
+  box-shadow: inset 0 1px 0 #ffffff48, 0 2px 9px #03071835;
+}
+
+.theme-swatch {
+  width: 17px;
+  height: 17px;
+  border: 1px solid #ffffffa3;
+  border-radius: 50%;
+  box-shadow: inset -2px -3px 5px #11172b55, 0 0 8px #ffffff55;
+}
+
+.theme-swatch--aurora { background: linear-gradient(135deg, #7be2ff, #5369ee 58%, #d9a5ff); }
+.theme-swatch--mint { background: linear-gradient(135deg, #adffe3, #42cdb3 58%, #a3ffd5); }
+.theme-swatch--dusk { background: linear-gradient(135deg, #ffe7a1, #ff9a73 58%, #eb80c0); }
+
+.bubble-config-trigger svg {
+  width: 21px;
+  height: 21px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.35;
+}
+
+.bubble-config-backdrop {
+  position: fixed;
+  z-index: 45;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(5, 7, 16, 0.35);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.bubble-config {
+  width: min(440px, 100%);
+  padding: 25px;
+  border: 1px solid rgba(226, 235, 255, 0.28);
+  border-radius: 26px;
+  background: linear-gradient(145deg, rgba(48, 61, 100, 0.92), rgba(28, 35, 67, 0.91));
+  box-shadow: 0 30px 100px rgba(0, 0, 0, 0.48), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  color: #f1f4ff;
+}
+
+.bubble-config__header,
+.bubble-config__footer,
+.bubble-config__row,
+.bubble-config__stepper {
+  display: flex;
+  align-items: center;
+}
+
+.bubble-config__header,
+.bubble-config__footer {
+  justify-content: space-between;
+}
+
+.bubble-config__header > div > span {
+  color: #b9c8e8;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+}
+
+.bubble-config__header h2 {
+  margin: 5px 0 0;
+  font-size: 22px;
+  font-weight: 550;
+}
+
+.bubble-config__close {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  color: #eef2ff;
+  font-size: 24px;
+  line-height: 1;
+}
+
+.bubble-config__summary {
+  margin: 16px 0 20px;
+  color: #c5cfe5;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.bubble-config__rows {
+  display: grid;
+  gap: 10px;
+}
+
+.bubble-config__row {
+  min-height: 58px;
+  gap: 13px;
+  padding: 9px 11px;
+  border: 1px solid rgba(231, 238, 255, 0.1);
+  border-radius: 17px;
+  background: rgba(235, 241, 255, 0.055);
+}
+
+.bubble-config__sample {
+  display: block;
+  flex: 0 0 auto;
+  border: 1px solid rgba(238, 246, 255, 0.72);
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 25%, rgba(255, 255, 255, 0.82), rgba(186, 207, 255, 0.34) 17%, rgba(135, 163, 255, 0.16) 58%, rgba(231, 232, 255, 0.34));
+  box-shadow: inset -3px -4px 10px rgba(146, 165, 255, 0.3), 0 0 12px rgba(178, 199, 255, 0.16);
+}
+
+.bubble-config__sample.is-large { width: 34px; height: 34px; }
+.bubble-config__sample.is-medium { width: 28px; height: 28px; }
+.bubble-config__sample.is-small { width: 22px; height: 22px; }
+.bubble-config__sample.is-micro { width: 16px; height: 16px; }
+
+.bubble-config__label {
+  flex: 1;
+  color: #e6ecfb;
+  font-size: 14px;
+}
+
+.bubble-config__stepper {
+  gap: 10px;
+}
+
+.bubble-config__stepper button {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  border: 1px solid rgba(231, 239, 255, 0.2);
+  border-radius: 11px;
+  background: rgba(224, 234, 255, 0.1);
+  color: #f6f8ff;
+  font-size: 20px;
+  line-height: 1;
+}
+
+.bubble-config__stepper button:disabled {
+  cursor: default;
+  opacity: 0.35;
+}
+
+.bubble-config__stepper output {
+  width: 20px;
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.bubble-config__footer {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(230, 239, 255, 0.14);
+  color: #c4cfe5;
+  font-size: 13px;
+}
+
+.bubble-config__footer strong {
+  color: #f6f8ff;
+  font-size: 16px;
+  font-weight: 550;
+}
+
+.bubble-config__footer small {
+  color: #9eaccb;
+  font-size: 12px;
+  font-weight: 400;
+}
+
 @media (max-width: 760px) {
+  .scene-controls {
+    top: 14px;
+    right: 12px;
+    gap: 6px;
+  }
+
+  .original-page__actions { top: 14px; right: 12px; gap: 6px; }
+  .original-page__switch { padding: 9px 12px; }
+  .original-page__content { top: 46%; }
+  .original-page__content > p { font-size: 13px; }
+  .original-page__start { min-height: 68px; padding: 9px 12px; border-radius: 20px; }
+  .original-page__plus { width: 38px; height: 38px; flex-basis: 38px; }
+  .original-page__start small { font-size: 11px; }
+  .original-page__composer { bottom: max(14px, env(safe-area-inset-bottom)); width: calc(100vw - 24px); padding: 8px 12px; }
+  .original-page__composer textarea { min-height: 50px; }
+
+  .theme-switcher {
+    gap: 2px;
+    padding: 4px;
+    border-radius: 15px;
+  }
+
+  .theme-switcher button {
+    width: 30px;
+    height: 30px;
+  }
+
+  .bubble-config-trigger {
+    width: 40px;
+    height: 40px;
+    border-radius: 14px;
+  }
+
   .note-layer {
-    inset: 0 12px 0 clamp(178px, 46vw, 240px);
+    inset: 0;
     padding: 12px;
   }
 
-  .note-content {
-    gap: 21px;
+  .composer {
+    bottom: max(14px, env(safe-area-inset-bottom));
+    width: calc(100vw - 24px);
   }
 
   .note-heading h1 {
@@ -342,8 +936,8 @@ textarea:focus-visible {
   }
 
   .composer {
-    padding: 14px;
-    border-radius: 20px;
+    padding: 8px 12px;
+    border-radius: 18px;
   }
 
   .composer-actions {
@@ -362,12 +956,11 @@ textarea:focus-visible {
 
 @media (max-width: 390px) {
   .note-layer {
-    right: 8px;
-    padding: 8px;
+    padding-right: 8px;
   }
 
-  .note-content {
-    gap: 14px;
+  .composer {
+    width: calc(100vw - 16px);
   }
 
   .note-heading h1 {
@@ -397,11 +990,11 @@ textarea:focus-visible {
   }
 
   .composer {
-    padding: 11px;
+    padding: 7px 10px;
   }
 
   .composer textarea {
-    min-height: 100px;
+    min-height: 50px;
     font-size: 15px;
   }
 
