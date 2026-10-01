@@ -65,7 +65,8 @@ function makeBeadGeometry(style: BubbleStyle) {
   return geometry;
 }
 
-const MAX_COUNT = 34;
+// Up to 34 configured bubbles plus 10 automatically added note carriers.
+const MAX_COUNT = 44;
 
 function normalizeBubbleCounts(counts: BubbleCounts): BubbleCounts {
   let remaining = MAX_COUNT;
@@ -182,6 +183,7 @@ type Bead = {
   phase: number;
   spin: THREE.Vector3;
   radius: number;
+  major: boolean;
 };
 
 /* one deterministic sequence so the arrangement is identical on every load and a
@@ -290,7 +292,8 @@ export function createGlassParticleField(canvas: HTMLCanvasElement, getOptions: 
       material,
       origin,
       radius,
-      bob: 0.14 + random() * 0.34,
+      major,
+      bob: major ? 0.04 + random() * 0.045 : 0.14 + random() * 0.34,
       phase: random() * 6.28,
       spin: new THREE.Vector3((random() - 0.5) * 0.28, (random() - 0.5) * 0.34, (random() - 0.5) * 0.2),
     });
@@ -298,8 +301,9 @@ export function createGlassParticleField(canvas: HTMLCanvasElement, getOptions: 
 
   const titleSprites = beads
     .map((bead, index) => ({ bead, index }))
+    .filter(({ index }) => index < mediumEnd)
     .sort((a, b) => b.bead.radius - a.bead.radius)
-    .slice(0, 3)
+    .slice(0, 10)
     .map(({ bead }) => {
       const canvas = document.createElement("canvas");
       canvas.width = 512;
@@ -329,7 +333,8 @@ export function createGlassParticleField(canvas: HTMLCanvasElement, getOptions: 
     raycastPointer.set(((clientX - rect.left) / Math.max(1, rect.width)) * 2 - 1, -(((clientY - rect.top) / Math.max(1, rect.height)) * 2 - 1));
     group.updateMatrixWorld(true);
     raycaster.setFromCamera(raycastPointer, camera);
-    const hit = raycaster.intersectObjects(beadMeshes, false)[0];
+    const selectable = beadMeshes.filter((mesh, index) => mesh.visible && Boolean(getOptions().notes[index]));
+    const hit = raycaster.intersectObjects(selectable, false)[0];
     return hit ? titleSprites.findIndex(({ bead }) => bead.mesh === hit.object) : -1;
   };
   const onCanvasPointerMove = (event: PointerEvent) => {
@@ -395,6 +400,25 @@ export function createGlassParticleField(canvas: HTMLCanvasElement, getOptions: 
     camera.fov = camera.aspect > 1 ? 42 : 42 / Math.max(0.62, camera.aspect);
     camera.updateProjectionMatrix();
     const tanHalfFov = Math.tan(THREE.MathUtils.degToRad(camera.fov * 0.5));
+    // Keep readable bubbles in a balanced central cluster, above the composer.
+    // Screen-relative anchors also work when the window changes aspect ratio.
+    const majorBeads = beads.filter((bead) => bead.major);
+    const columns = Math.max(1, Math.ceil(Math.sqrt(majorBeads.length * 1.5)));
+    const rows = Math.ceil(majorBeads.length / columns);
+    const verticalSpread = Math.min(0.44, Math.max(0, rows - 1) * 0.22);
+    let majorIndex = 0;
+    for (let row = 0; row < rows; row += 1) {
+      const rowCount = Math.ceil((majorBeads.length - majorIndex) / (rows - row));
+      const horizontalSpread = Math.min(0.56, Math.max(0, rowCount - 1) * 0.22);
+      for (let column = 0; column < rowCount; column += 1) {
+        const bead = majorBeads[majorIndex++];
+        const halfHeight = (camera.position.z - bead.origin.z) * tanHalfFov;
+        const screenX = 0.5 + (rowCount > 1 ? column / (rowCount - 1) - 0.5 : 0) * horizontalSpread;
+        const screenY = 0.42 + (rows > 1 ? row / (rows - 1) - 0.5 : 0) * verticalSpread;
+        bead.origin.x = (screenX * 2 - 1) * halfHeight * camera.aspect;
+        bead.origin.y = (1 - screenY * 2) * halfHeight;
+      }
+    }
     for (const bead of beads) {
       const nearestDepth = Math.max(0.1, camera.position.z - bead.origin.z - bead.bob * 0.5);
       const halfHeight = nearestDepth * tanHalfFov;
@@ -431,7 +455,11 @@ export function createGlassParticleField(canvas: HTMLCanvasElement, getOptions: 
     for (let index = 0; index < beads.length; index += 1) {
       const bead = beads[index];
       bead.mesh.visible = index < visible;
-      if (!bead.mesh.visible) continue;
+      if (!bead.mesh.visible) {
+        const hiddenLabel = titleSprites.find((entry) => entry.bead === bead);
+        if (hiddenLabel) hiddenLabel.sprite.visible = false;
+        continue;
+      }
       const uniforms = bead.material.uniforms;
       uniforms.uThickness.value = options.thickness * (0.55 + bead.radius * 0.9);
       uniforms.uDispersion.value = options.dispersion;

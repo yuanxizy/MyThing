@@ -1,0 +1,162 @@
+[
+  {
+    "id": "inspiration",
+    "name": "灵感",
+    "color": "#AC7B27",
+    "softColor": "#F6E7BD",
+    "icons": [
+      {
+        "id": "inspiration-idea",
+        "name": "灵光一现",
+        "meaning": "想法、创意、突然想到的点子",
+        "src": "/icons/cards/inspiration-idea.svg"
+      },
+      {
+        "id": "inspiration-spark",
+        "name": "灵感火花",
+        "meaning": "脑暴、突破、新的方向",
+        "src": "/icons/cards/inspiration-spark.svg"
+      },
+      {
+        "id": "inspiration-shooting-star",
+        "name": "奇妙发现",
+        "meaning": "新发现、值得尝试的事",
+        "src": "/icons/cards/inspiration-shooting-star.svg"
+      },
+      {
+        "id": "inspiration-sprout",
+        "name": "想法萌芽",
+        "meaning": "待发展的小想法、长期创作",
+        "src": "/icons/cards/inspiration-sprout.svg"
+      }
+    ]
+  },
+  {
+    "id": "excerpt",
+    "name": "摘录",
+    "color": "#627AB5",
+    "softColor": "#E1E8F8",
+    "icons": [
+      {
+        "id": "excerpt-quote",
+        "name": "金句摘录",
+        "meaning": "引用、金句、对话片段",
+        "src": "/icons/cards/excerpt-quote.svg"
+      },
+      {
+        "id": "excerpt-book",
+        "name": "阅读笔记",
+        "meaning": "读书摘录、学习笔记",
+        "src": "/icons/cards/excerpt-book.svg"
+      },
+      {
+        "id": "excerpt-bookmark",
+        "name": "收藏片段",
+        "meaning": "文章收藏、想回看的内容",
+        "src": "/icons/cards/excerpt-bookmark.svg"
+      },
+      {
+        "id": "excerpt-highlight",
+        "name": "重点标记",
+        "meaning": "关键段落、重要信息",
+        "src": "/icons/cards/excerpt-highlight.svg"
+      }
+    ]
+  },
+  {
+    "id": "life",
+    "name": "生活",
+    "color": "#BE795F",
+    "softColor": "#F7E3D9",
+    "icons": [
+      {
+        "id": "life-coffee",
+        "name": "日常小事",
+        "meaning": "吃喝、日常、轻松时刻",
+        "src": "/icons/cards/life-coffee.svg"
+      },
+      {
+        "id": "life-home",
+        "name": "家的记忆",
+        "meaning": "家庭、居家、亲友",
+        "src": "/icons/cards/life-home.svg"
+      },
+      {
+        "id": "life-leaf",
+        "name": "自然与健康",
+        "meaning": "散步、健康、植物、户外",
+        "src": "/icons/cards/life-leaf.svg"
+      },
+      {
+        "id": "life-sun",
+        "name": "美好一天",
+        "meaning": "心情、旅行、值得纪念的日子",
+        "src": "/icons/cards/life-sun.svg"
+      }
+    ]
+  },
+  {
+    "id": "work",
+    "name": "工作",
+    "color": "#4D8D87",
+    "softColor": "#DCEFEA",
+    "icons": [
+      {
+        "id": "work-briefcase",
+        "name": "工作事项",
+        "meaning": "项目、业务、工作备忘",
+        "src": "/icons/cards/work-briefcase.svg"
+      },
+      {
+        "id": "work-checklist",
+        "name": "待办清单",
+        "meaning": "任务、行动项、检查记录",
+        "src": "/icons/cards/work-checklist.svg"
+      },
+      {
+        "id": "work-calendar",
+        "name": "日程安排",
+        "meaning": "会议、预约、截止日期",
+        "src": "/icons/cards/work-calendar.svg"
+      },
+      {
+        "id": "work-target",
+        "name": "目标计划",
+        "meaning": "目标、里程碑、推进方向",
+        "src": "/icons/cards/work-target.svg"
+      }
+    ]
+  },
+  {
+    "id": "private",
+    "name": "私密",
+    "color": "#8C73A8",
+    "softColor": "#EBE2F3",
+    "icons": [
+      {
+        "id": "private-lock",
+        "name": "私密记事",
+        "meaning": "只想留给自己的记录",
+        "src": "/icons/cards/private-lock.svg"
+      },
+      {
+        "id": "private-key",
+        "name": "重要凭记",
+        "meaning": "个人线索、重要的私密提示",
+        "src": "/icons/cards/private-key.svg"
+      },
+      {
+        "id": "private-shield",
+        "name": "隐私保护",
+        "meaning": "边界、安全、隐私相关提醒",
+        "src": "/icons/cards/private-shield.svg"
+      },
+      {
+        "id": "private-diary",
+        "name": "内心日记",
+        "meaning": "心事、情绪、个人日记",
+        "src": "/icons/cards/private-diary.svg"
+      }
+    ]
+  }
+]

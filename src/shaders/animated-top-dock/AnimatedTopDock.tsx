@@ -32,6 +32,7 @@ export type AnimatedTopDockProps = {
   glassTitles?: string[];
   glassNotes?: GlassNote[];
   onGlassNoteSelect?: (note: GlassNote) => void;
+  onDockItemSelect?: (itemId: string, target: HTMLButtonElement) => void;
   bubbleCounts?: BubbleCounts;
   bubbleStyle?: BubbleStyle;
   disablePointerMotion?: boolean;
@@ -88,8 +89,8 @@ const RETRO_ITEMS: readonly DockItem[] = [
 ];
 
 const GLASS_ITEMS: readonly DockItem[] = [
-  { id: "overview", label: "Overview", icon: <><circle cx="8" cy="8" r="5.8" /><path d="M2.4 8c2.4-3.5 9-3.5 11.3 0" /></> },
-  { id: "studio", label: "Studio", icon: <><rect x="2.2" y="2.2" width="11.6" height="11.6" rx="3.6" /><circle cx="8" cy="8" r="2.5" /></> },
+  { id: "overview", label: "记事", icon: <><circle cx="8" cy="8" r="5.8" /><path d="M2.4 8c2.4-3.5 9-3.5 11.3 0" /></> },
+  { id: "studio", label: "任务", icon: <><rect x="2.2" y="2.2" width="11.6" height="11.6" rx="3.6" /><circle cx="8" cy="8" r="2.5" /></> },
   { id: "library", label: "Library", icon: <><rect x="2.1" y="2.6" width="3" height="10.8" rx="1" /><rect x="6.4" y="2.6" width="3" height="10.8" rx="1" /><path d="m10.9 3.7 2.9 1-2.4 8.6-2.2-.8" /></> },
   { id: "motion", label: "Motion", icon: <><path d="M1.8 10.6c2.6 0 3-5.2 6.2-5.2s3.6 5.2 6.2 5.2" /><circle cx="8" cy="5.4" r=".9" /></> },
   { id: "labs", label: "Labs", icon: <><path d="M6.4 2.2v4L3 12.1a1.3 1.3 0 0 0 1.1 2h7.8a1.3 1.3 0 0 0 1.1-2L9.6 6.2v-4" /><path d="M5.6 2.2h4.8M4.9 9.6h6.2" /></> },
@@ -252,10 +253,13 @@ export function AnimatedTopDock({ className = "", ...props }: AnimatedTopDockPro
     <button
       key={item.id}
       className={itemClass}
-      data-dock-item
+      data-dock-item={item.id}
       type="button"
       aria-pressed={active === item.id}
-      onClick={() => setActive(item.id)}
+      onClick={(event) => {
+        setActive(item.id);
+        props.onDockItemSelect?.(item.id, event.currentTarget);
+      }}
     >
       <span className={iconClass} aria-hidden="true"><svg viewBox={viewBox}>{item.icon}</svg></span>
       <span>{item.label}</span>
@@ -344,7 +348,6 @@ export function AnimatedTopDock({ className = "", ...props }: AnimatedTopDockPro
             <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.4 8h9.2M8.8 4.2 12.6 8l-3.8 3.8" /></svg>
           </button>
         </header>
-        <p className="animated-top-dock-component__caption">VERTICAL RAIL · SCREEN-SPACE DISPERSION</p>
       </div>
     );
   }
@@ -352,11 +355,11 @@ export function AnimatedTopDock({ className = "", ...props }: AnimatedTopDockPro
   return (
     <div className={`animated-top-dock-component${className ? ` ${className}` : ""}`}>
       <nav ref={rootRef} className="animated-top-dock__nav" aria-label="Animated top dock" data-dock-state="idle" data-dock-max="0.00">
-        <button className="animated-top-dock__item animated-top-dock__logo" data-dock-item type="button" aria-label="Home" onClick={() => setActive("system")}>
+        <button className="animated-top-dock__item animated-top-dock__logo" data-dock-item="system" type="button" aria-label="Home" onClick={() => setActive("system")}>
           {BRAND_MARK}
         </button>
         {items.map((item) => (
-          <button key={item.id} className="animated-top-dock__item animated-top-dock__link" data-dock-item type="button" aria-pressed={active === item.id} onClick={() => setActive(item.id)}>
+          <button key={item.id} className="animated-top-dock__item animated-top-dock__link" data-dock-item={item.id} type="button" aria-pressed={active === item.id} onClick={() => setActive(item.id)}>
             <span className="animated-top-dock__icon" aria-hidden="true"><svg viewBox="0 0 16 16">{item.icon}</svg></span>
             <span>{item.label}</span>
           </button>

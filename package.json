@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host 127.0.0.1",
-    "build": "vite build"
+    "build": "vite build",
+    "check:notes": "node scripts/check-note-classification.cjs && node scripts/check-note-composer.cjs && node scripts/check-featured-card.cjs"
   },
   "dependencies": {
     "@designcodeio/threeui": "1.2.0",
@@ -18,6 +19,7 @@
     "@types/react-dom": "19.2.3",
     "@types/three": "0.149.0",
     "@vitejs/plugin-react": "5.1.1",
+    "jsdom": "^26.1.0",
     "typescript": "5.9.3",
     "vite": "7.3.1"
   }
